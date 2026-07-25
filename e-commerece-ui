@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopEasy - E-Commerce UI</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="container navbar">
+            <a href="#" class="logo">Shop<span>Easy</span></a>
+            <nav class="nav-menu" id="nav-menu">
+                <a href="#home">Home</a>
+                <a href="#products">Products</a>
+            </nav>
+            <div class="nav-icons">
+                <a href="#" class="cart-icon"><i class="fa-solid fa-cart-shopping"></i><span id="cart-count">0</span></a>
+                <button class="mobile-toggle" id="mobile-toggle"><i class="fa-solid fa-bars"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero" id="home">
+            <div class="container hero-content">
+                <h1>Upgrade Your Style</h1>
+                <p>Discover top products with up to 40% discount.</p>
+                <a href="#products" class="btn">Shop Now</a>
+            </div>
+        </section>
+
+        <section class="products container" id="products">
+            <h2 class="section-title">Featured Products</h2>
+            <div class="product-grid">
+                <article class="product-card">
+                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500" alt="Headphones">
+                    <div class="product-info">
+                        <h3>Wireless Headphones</h3>
+                        <p class="price">$99.99</p>
+                        <button class="add-to-cart-btn">Add to Cart</button>
+                    </div>
+                </article>
+                <article class="product-card">
+                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500" alt="Watch">
+                    <div class="product-info">
+                        <h3>Smart Fitness Watch</h3>
+                        <p class="price">$149.99</p>
+                        <button class="add-to-cart-btn">Add to Cart</button>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <p>&copy; 2026 ShopEasy. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+:root {
+    --primary-color: #ff5722;
+    --dark-color: #1a1a1a;
+    --text-color: #333;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+body { background: #fff; color: var(--text-color); }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+.header { background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1); sticky; top: 0; z-index: 100; }
+.navbar { display: flex; justify-content: space-between; align-items: center; height: 70px; }
+.logo { font-size: 24px; font-weight: 700; color: var(--dark-color); text-decoration: none; }
+.logo span { color: var(--primary-color); }
+.nav-menu { display: flex; gap: 25px; }
+.nav-menu a { text-decoration: none; color: var(--dark-color); font-weight: 500; }
+.nav-icons { display: flex; align-items: center; gap: 15px; }
+.cart-icon { position: relative; font-size: 20px; color: var(--dark-color); }
+#cart-count { position: absolute; top: -8px; right: -10px; background: var(--primary-color); color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 50%; }
+.mobile-toggle { display: none; background: none; border: none; font-size: 22px; }
+
+.hero { background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200') center/cover; height: 50vh; display: flex; align-items: center; text-align: center; color: #fff; }
+.hero-content h1 { font-size: 36px; margin-bottom: 10px; }
+.btn { display: inline-block; padding: 10px 25px; background: var(--primary-color); color: #fff; text-decoration: none; border-radius: 5px; }
+
+.products { padding: 50px 20px; }
+.section-title { text-align: center; font-size: 28px; margin-bottom: 30px; }
+.product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
+.product-card { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+.product-card img { width: 100%; height: 200px; object-fit: cover; }
+.product-info { padding: 15px; }
+.price { font-size: 18px; font-weight: 600; color: var(--primary-color); margin: 10px 0; }
+.add-to-cart-btn { width: 100%; padding: 10px; background: var(--dark-color); color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+
+.footer { background: var(--dark-color); color: #fff; text-align: center; padding: 20px 0; margin-top: 40px; }
+
+@media (max-width: 768px) {
+    .mobile-toggle { display: block; }
+    .nav-menu { position: absolute; top: 70px; left: -100%; flex-direction: column; background: #fff; width: 100%; padding: 20px; }
+    .nav-menu.active { left: 0; }
+}
+const mobileToggle = document.getElementById('mobile-toggle');
+const navMenu = document.getElementById('nav-menu');
+
+mobileToggle.addEventListener('click', () => {
+    navMenu.classList.toggle('active');
+});
+
+const addToCartBtns = document.querySelectorAll('.add-to-cart-btn');
+const cartCount = document.getElementById('cart-count');
+let count = 0;
+
+addToCartBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        count++;
+        cartCount.textContent = count;
+        btn.textContent = "Added!";
+        setTimeout(() => { btn.textContent = "Add to Cart"; }, 1000);
+    });
+});
+# 🛒 ShopEasy - E-Commerce UI
+
+A modern and responsive E-Commerce User Interface.
+
+## 🚀 Live Demo
+[View Live Site](YOUR_LIVE_LINK_HERE)
+
+## ✨ Features
+- Responsive Design (Mobile + Desktop)
+- Semantic HTML
+- JavaScript Cart Logic
+.DS_Store
+node_modules/
