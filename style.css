@@ -93,6 +93,21 @@ body { background: #f9f9f9; color: var(--text-color); }
 .form-actions { display: flex; gap: 12px; margin-top: 8px; }
 .form-actions .clear-btn { margin-top: 0; }
 
+/* ---------- Login ---------- */
+.nav-icons { display: flex; align-items: center; gap: 18px; }
+.auth-link { text-decoration: none; color: var(--dark-color); font-weight: 600; font-size: 14px; border: 1px solid var(--dark-color); padding: 6px 12px; border-radius: 5px; }
+.auth-link:hover { background: var(--dark-color); color: #fff; }
+
+.login-page { display: flex; justify-content: center; padding: 50px 20px; min-height: 60vh; }
+.login-card { background: #fff; width: 100%; max-width: 400px; border-radius: 8px; padding: 30px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); align-self: flex-start; }
+.login-card h1 { font-size: 26px; margin-bottom: 6px; }
+.login-sub { color: #777; font-size: 14px; margin-bottom: 20px; }
+.login-card label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 14px; }
+.login-card input[type="text"], .login-card input[type="password"] { display: block; width: 100%; margin-top: 5px; padding: 11px; border: 1px solid #ddd; border-radius: 4px; font-size: 15px; font-weight: normal; }
+.show-pass { display: flex; align-items: center; gap: 6px; font-weight: normal !important; }
+.login-card .order-btn { margin-top: 6px; }
+.login-note { font-size: 12px; color: #777; margin-top: 14px; text-align: center; }
+
 @media (max-width: 768px) {
     .mobile-toggle { display: block; }
     .nav-menu { display: none; }
