@@ -20,6 +20,7 @@
             </nav>
 
             <div class="nav-icons">
+                <a href="login.html" id="auth-link" class="auth-link">Login</a>
                 <a href="cart.html" class="cart-icon">
                     <i class="fa-solid fa-cart-shopping"></i>
                     <span id="cart-count">0</span>
@@ -223,6 +224,11 @@
 
         // order now -> show form
         $('order-now').addEventListener('click', () => {
+            if (!getUser()) {
+                alert('Please login to place your order.');
+                window.location.href = 'login.html?next=cart.html';
+                return;
+            }
             $('cart-content').hidden = true;
             $('checkout').hidden = false;
             $('checkout').scrollIntoView({ behavior: 'smooth' });
@@ -235,6 +241,7 @@
         // place order
         $('checkout-form').addEventListener('submit', e => {
             e.preventDefault();
+            if (!getUser()) { window.location.href = 'login.html?next=cart.html'; return; }
             const name = $('f-name').value.trim();
             const phone = $('f-phone').value.trim();
             const address = $('f-address').value.trim();
