@@ -53,6 +53,45 @@ addToCartBtns.forEach(btn => {
     });
 });
 
+// ---------- Login ----------
+// Change these two values to set your own user id and 6-character password.
+const VALID_USER_ID = 'aasif';
+const VALID_PASSWORD = 'abc123';
+
+const AUTH_KEY = 'shopeasy_user';
+
+function getUser() {
+    try {
+        return localStorage.getItem(AUTH_KEY);
+    } catch (e) {
+        return null;
+    }
+}
+
+function logout() {
+    try {
+        localStorage.removeItem(AUTH_KEY);
+    } catch (e) {}
+}
+
+function updateAuthLink() {
+    const link = document.getElementById('auth-link');
+    if (!link) return;
+    if (getUser()) {
+        link.textContent = 'Logout';
+        link.href = '#';
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            logout();
+            window.location.reload();
+        });
+    } else {
+        link.textContent = 'Login';
+        link.href = 'login.html';
+    }
+}
+updateAuthLink();
+
 // ---------- Mobile menu ----------
 const mobileToggle = document.getElementById('mobile-toggle');
 const navMenu = document.getElementById('nav-menu');
