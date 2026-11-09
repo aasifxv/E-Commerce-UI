@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart - ShopEasy</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="container navbar">
+            <a href="index.html" class="logo">Shop<span>Easy</span></a>
+
+            <nav class="nav-menu" id="nav-menu">
+                <a href="index.html#home">Home</a>
+                <a href="index.html#products">Products</a>
+            </nav>
+
+            <div class="nav-icons">
+                <a href="cart.html" class="cart-icon">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span id="cart-count">0</span>
+                </a>
+                <button class="mobile-toggle" id="mobile-toggle">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container cart-page">
+        <h1 class="page-title">Your Cart</h1>
+
+        <!-- Empty cart -->
+        <section class="cart-empty" id="cart-empty" hidden>
+            <i class="fa-solid fa-cart-shopping"></i>
+            <h2>Your cart is empty</h2>
+            <p>Add some products and they will show up here.</p>
+            <a href="index.html#products" class="btn">Start Shopping</a>
+        </section>
+
+        <!-- Cart with items -->
+        <section class="cart-layout" id="cart-content" hidden>
+            <div class="cart-items" id="cart-items"></div>
+
+            <aside class="order-summary">
+                <h2>Order Summary</h2>
+
+                <div class="promo-box">
+                    <input type="text" id="promo-input" placeholder="Promo code (try SHOP10)">
+                    <button type="button" id="promo-apply">Apply</button>
+                </div>
+                <p class="promo-msg" id="promo-msg"></p>
+
+                <div class="sum-row"><span>Items</span><span id="sum-items">0</span></div>
+                <div class="sum-row"><span>Subtotal</span><span id="sum-subtotal">$0.00</span></div>
+                <div class="sum-row discount-row" id="discount-row" hidden><span>Discount</span><span id="sum-discount">-$0.00</span></div>
+                <div class="sum-row"><span>Shipping</span><span id="sum-shipping">$0.00</span></div>
+                <div class="sum-row"><span>Tax (5%)</span><span id="sum-tax">$0.00</span></div>
+                <div class="sum-row total-row"><span>Total</span><span id="sum-total">$0.00</span></div>
+                <p class="ship-note">Free shipping on orders of $100 or more.</p>
+
+                <button type="button" class="order-btn" id="order-now">Order Now</button>
+                <button type="button" class="clear-btn" id="clear-cart">Clear Cart</button>
+                <a href="index.html#products" class="continue-link">&larr; Continue Shopping</a>
+            </aside>
+        </section>
+
+        <!-- Checkout form -->
+        <section class="checkout" id="checkout" hidden>
+            <h2>Delivery Details</h2>
+            <form id="checkout-form" novalidate>
+                <div class="form-grid">
+                    <label>Full name
+                        <input type="text" id="f-name" required placeholder="Your full name">
+                    </label>
+                    <label>Phone number
+                        <input type="tel" id="f-phone" required inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
+                    </label>
+                    <label class="wide">Address
+                        <textarea id="f-address" rows="2" required placeholder="House no, street, area"></textarea>
+                    </label>
+                    <label>City
+                        <input type="text" id="f-city" required placeholder="City">
+                    </label>
+                    <label>Pincode
+                        <input type="text" id="f-pin" required inputmode="numeric" maxlength="6" placeholder="6-digit pincode">
+                    </label>
+                </div>
+
+                <h3>Payment method</h3>
+                <div class="pay-options">
+                    <label><input type="radio" name="pay" value="Cash on Delivery" checked> Cash on Delivery</label>
+                    <label><input type="radio" name="pay" value="UPI"> UPI</label>
+                    <label><input type="radio" name="pay" value="Card"> Debit / Credit Card</label>
+                </div>
+
+                <p class="form-error" id="form-error"></p>
+
+                <div class="form-actions">
+                    <button type="button" class="clear-btn" id="back-to-cart">Back to Cart</button>
+                    <button type="submit" class="order-btn">Place Order</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Order placed -->
+        <section class="order-success" id="order-success" hidden>
+            <i class="fa-solid fa-circle-check"></i>
+            <h2>Order placed successfully!</h2>
+            <p>Thank you, <b id="ok-name"></b>. Your order id is <b id="ok-id"></b>.</p>
+            <p id="ok-details"></p>
+            <a href="index.html#products" class="btn">Continue Shopping</a>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <p>&copy; 2026 ShopEasy. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        const ORDERS_KEY = 'shopeasy_orders';
+        const MAX_QTY = 10;
+        const PROMOS = { SHOP10: 0.10, WELCOME5: 0.05 };
+        let promoCode = '';
+
+        const $ = id => document.getElementById(id);
+        const money = n => '$' + n.toFixed(2);
+        const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+        function totals(cart) {
+            const items = cart.reduce((s, i) => s + i.qty, 0);
+            const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+            const rate = PROMOS[promoCode] || 0;
+            const discount = subtotal * rate;
+            const after = subtotal - discount;
+            const shipping = (after >= 100 || after === 0) ? 0 : 5;
+            const tax = after * 0.05;
+            return { items, subtotal, discount, shipping, tax, total: after + shipping + tax };
+        }
+
+        function render() {
+            const cart = loadCart();
+            updateBadge();
+            const empty = cart.length === 0;
+            $('cart-empty').hidden = !empty;
+            $('cart-content').hidden = empty;
+            if (empty) return;
+
+            $('cart-items').innerHTML = cart.map((item, i) => `
+                <article class="cart-item">
+                    <img src="${esc(item.img)}" alt="${esc(item.name)}">
+                    <div class="ci-info">
+                        <h3>${esc(item.name)}</h3>
+                        <p class="ci-price">${money(item.price)} each</p>
+                        <div class="qty-box">
+                            <button type="button" data-act="dec" data-i="${i}" ${item.qty <= 1 ? 'disabled' : ''} aria-label="Decrease quantity">&minus;</button>
+                            <span>${item.qty}</span>
+                            <button type="button" data-act="inc" data-i="${i}" ${item.qty >= MAX_QTY ? 'disabled' : ''} aria-label="Increase quantity">+</button>
+                        </div>
+                    </div>
+                    <div class="ci-right">
+                        <p class="ci-line">${money(item.price * item.qty)}</p>
+                        <button type="button" class="remove-btn" data-act="rm" data-i="${i}"><i class="fa-solid fa-trash"></i> Remove</button>
+                    </div>
+                </article>`).join('');
+
+            const t = totals(cart);
+            $('sum-items').textContent = t.items;
+            $('sum-subtotal').textContent = money(t.subtotal);
+            $('discount-row').hidden = t.discount === 0;
+            $('sum-discount').textContent = '-' + money(t.discount);
+            $('sum-shipping').textContent = t.shipping === 0 ? 'Free' : money(t.shipping);
+            $('sum-tax').textContent = money(t.tax);
+            $('sum-total').textContent = money(t.total);
+        }
+
+        // quantity + remove
+        $('cart-items').addEventListener('click', e => {
+            const btn = e.target.closest('button[data-act]');
+            if (!btn) return;
+            const cart = loadCart();
+            const i = Number(btn.dataset.i);
+            if (!cart[i]) return;
+            if (btn.dataset.act === 'inc' && cart[i].qty < MAX_QTY) cart[i].qty++;
+            if (btn.dataset.act === 'dec' && cart[i].qty > 1) cart[i].qty--;
+            if (btn.dataset.act === 'rm') cart.splice(i, 1);
+            saveCart(cart);
+            render();
+        });
+
+        // promo code
+        $('promo-apply').addEventListener('click', () => {
+            const code = $('promo-input').value.trim().toUpperCase();
+            const msg = $('promo-msg');
+            if (!code) { msg.textContent = 'Enter a promo code.'; msg.className = 'promo-msg bad'; return; }
+            if (PROMOS[code]) {
+                promoCode = code;
+                msg.textContent = code + ' applied: ' + (PROMOS[code] * 100) + '% off.';
+                msg.className = 'promo-msg good';
+            } else {
+                promoCode = '';
+                msg.textContent = 'Invalid promo code.';
+                msg.className = 'promo-msg bad';
+            }
+            render();
+        });
+
+        // clear cart
+        $('clear-cart').addEventListener('click', () => {
+            if (confirm('Remove all items from your cart?')) {
+                saveCart([]);
+                promoCode = '';
+                render();
+            }
+        });
+
+        // order now -> show form
+        $('order-now').addEventListener('click', () => {
+            $('cart-content').hidden = true;
+            $('checkout').hidden = false;
+            $('checkout').scrollIntoView({ behavior: 'smooth' });
+        });
+        $('back-to-cart').addEventListener('click', () => {
+            $('checkout').hidden = true;
+            render();
+        });
+
+        // place order
+        $('checkout-form').addEventListener('submit', e => {
+            e.preventDefault();
+            const name = $('f-name').value.trim();
+            const phone = $('f-phone').value.trim();
+            const address = $('f-address').value.trim();
+            const city = $('f-city').value.trim();
+            const pin = $('f-pin').value.trim();
+            const err = $('form-error');
+
+            if (!name || !phone || !address || !city || !pin) { err.textContent = 'Please fill in all the details.'; return; }
+            if (!/^\d{10}$/.test(phone)) { err.textContent = 'Phone number must be 10 digits.'; return; }
+            if (!/^\d{6}$/.test(pin)) { err.textContent = 'Pincode must be 6 digits.'; return; }
+            err.textContent = '';
+
+            const cart = loadCart();
+            if (cart.length === 0) { err.textContent = 'Your cart is empty.'; return; }
+            const t = totals(cart);
+            const pay = document.querySelector('input[name="pay"]:checked').value;
+            const order = {
+                id: 'SE' + Date.now().toString().slice(-8),
+                date: new Date().toISOString(),
+                items: cart,
+                totals: t,
+                promo: promoCode,
+                customer: { name: name, phone: phone, address: address, city: city, pin: pin },
+                payment: pay
+            };
+            try {
+                const orders = JSON.parse(localStorage.getItem(ORDERS_KEY)) || [];
+                orders.push(order);
+                localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+            } catch (x) {}
+
+            saveCart([]);
+            promoCode = '';
+            updateBadge();
+            $('checkout').hidden = true;
+            $('ok-name').textContent = name;
+            $('ok-id').textContent = order.id;
+            $('ok-details').textContent = t.items + ' item(s), total ' + money(t.total) + ', payment: ' + pay + '.';
+            $('order-success').hidden = false;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        render();
+    </script>
+</body>
+</html>
